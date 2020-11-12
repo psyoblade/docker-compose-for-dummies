@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  mysql:
+    image: psyoblade/data-engineer-intermediate-day1-mysql:1.1 # local/mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 3s
+      timeout: 1s
+      retries: 3
+    volumes:
+      - ./etc:/etc/mysql/conf.d
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.0.4
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8183:80
